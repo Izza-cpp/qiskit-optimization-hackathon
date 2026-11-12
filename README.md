@@ -55,19 +55,23 @@ Initial parameters: INTERP warm start across depths (Zhou et al. 2020), implemen
 src/problem.py          data + validation          src/objective.py       F(x), models A/B/C
 src/constraints.py      cardinality, decoding      src/classical_solver.py exact baseline (120 candidates, independent)
 src/quantum_model.py    QUBO, Ising, circuits      src/qaoa_solver.py     hybrid QAOA loop
-src/evaluation.py       metrics vs exact + controls  tests/                105 tests
-experiments/run_experiments.py   all experiments    experiments/make_architecture.py, build_notebook.py
+src/evaluation.py       metrics vs exact + controls  tests/                110 tests
+experiments/run_experiments.py   main experiments    experiments/run_extra.py  E8-E10 (heuristics, scaling, robustness)
+experiments/make_architecture.py, build_notebook.py, build_report.py (-> docs/final_report.docx)
+src/heuristics.py greedy/SA/local search    src/instances.py scaling instances
 experiments/results/    CSV/JSON/PNG (generated)     docs/architecture.png, notebooks/experimentation.ipynb, video/demo_link.txt
 ```
 
 ## 6. Run it
-From the repository root (tested with Python 3.13, Qiskit 2.6.2, Aer 0.18.2):
+From the repository root (tested with Python 3.12, Qiskit 2.6.2, Aer 0.18.2):
 ```
 python -m venv .venv && .venv\Scripts\activate        # Windows (Linux/macOS: source .venv/bin/activate)
 python -m pip install -r requirements.txt
-python -m pytest -q                                    # 105 tests, ~1-3 min
+python -m pytest -q                                    # 110 tests, ~1-3 min
 python experiments/run_experiments.py --quick          # ~1 min smoke test
 python experiments/run_experiments.py                  # full study, ~7-11 min (10.7 min on a 4-worker Windows laptop)
+python -m experiments.run_extra                        # E8-E10 extra studies, ~15 min (n=14 alone ~7 min)
+python experiments/build_report.py                     # rebuild docs/final_report.docx
 python experiments/make_architecture.py                # redraw docs/architecture.png
 python experiments/build_notebook.py && python -m jupyter nbconvert --to notebook --execute --inplace notebooks/experimentation.ipynb
 ```
@@ -98,8 +102,35 @@ XY at p=5 puts ≈8× more probability on the exact optimum than random feasible
 **Caution:** the best *feasible sampled* deployment equals the exact optimum in all 100 depth-study runs, but that is **not evidence of QAOA skill**: with 2048 shots, random feasible sampling finds the optimum as well (miss probability ≈ 3e-8). Enrichment over random is the meaningful metric.
 Other studies: shots 128–8192 (`summary_shots.csv`), penalty 0.25–4 × λ* (`summary_penalty.csv`: feasibility 8% at 0.25 λ* (4 of 5 runs found the optimum), 66% at λ*, 67–73% above; below λ* the QUBO ground state is infeasible), and QAOA recovers each model's *different* optimum in 5/5 seeds (`summary_models_qaoa.csv`, XY, p=4).
 
+### 7b. Extra studies: heuristics, scaling, robustness, hardware size (`experiments/run_extra.py`, `docs/final_report.docx`)
+**Classical heuristics (E8, model C, 300 repetitions; `e8_heuristics.csv`).** Probability of returning the exact optimum: local search 0.13 / 0.48 / 0.93 / 1.00 and simulated annealing 0.19 / 0.48 / 0.85 / 0.97 at 10 / 25 / 50 / 100 objective evaluations; random search 0.08 / 0.20 / 0.36 / 0.54; greedy construction finds the optimum with 27 evaluations. **Classical heuristics solve this instance easily; QAOA is not competitive here.**
+
+**Scaling (E9, synthetic seeded instances, model C, XY-QAOA p=3, 2-3 seeds; `e9_scaling_*.csv`, `fig10_scaling.png`).**
+
+| n | K | candidates | QAOA P(opt) | random P(opt) | enrichment | logical depth |
+|---|---|---|---|---|---|---|
+| 8 | 3 | 56 | 0.0671 | 0.0179 | 3.8× | 550 |
+| 10 | 3 | 120 | 0.0389 | 0.0083 | 4.7× | 2089 |
+| 12 | 4 | 495 | 0.0285 | 0.0020 | 14.1× | 8246 |
+| 14 | 4 | 1001 | 0.0056 | 0.0010 | 5.6× | 32830 |
+
+Enrichment over random sampling persists up to n = 14 on average, but the circuit depth (generic Dicke state) explodes (n=14: ~33k layers, ~400 s per run on 1 CPU) and the n = 14 result is noisy: one of two seeds (P=0.0005) was below random sampling (0.0010). Only 2-3 seeds per size, so this is indicative only.
+
+**Robustness of the model-C optimum (E10a; 3000 data perturbations per level, `e10_robustness.csv`).**
+
+| input noise σ | nominal optimum (L1,L3,L9) still exactly optimal | optimum contains L1 and L3 | nominal within top 5 of 120 |
+|---|---|---|---|
+| 0.05 | 0.53 | 1.00 | 1.00 |
+| 0.10 | 0.46 | 0.99 | 0.99 |
+| 0.20 | 0.32 | 0.85 | 0.82 |
+| 0.30 | 0.21 | 0.67 | 0.62 |
+
+The exact optimum is fragile (the best and second-best differ by 0.009), but "send teams to L1 and L3" is robust at low noise; the third location is the uncertain choice. XY-QAOA (p=5, 3 seeds) puts 8.5% of its samples on the exact optimum, 15.6% on the 2 deployments within 1% of F*, and 35.9% on the 8 deployments within 10% (random feasible sampling: 0.8% / 1.7% / 6.7%).
+
+**Hardware size (E10c, `e10_transpiled_size.csv`; noise-free transpilation to a heavy-hex coupling map, ECR/RZ/SX/X basis; no hardware run).** Transpiled depth at p=1: X mixer 338 (195 ECR), XY + generic Dicke start 7471 (2821 ECR), XY + shallow basis start 334 (242 ECR). The XY circuit is far too deep for current devices. **Negative result:** replacing the Dicke start by the single basis state |1110000000⟩ (`QaoaConfig(start="basis")`) makes the circuit shallow but P(optimum) was 0.0 in 3 of 3 runs, so we keep the Dicke start.
+
 ## 8. Limitations
-* No quantum advantage; 120 candidates are enumerated instantly. Noiseless simulation only; hardware noise, transpilation to real devices and scaling were not studied.
+* No quantum advantage; 120 candidates are enumerated instantly. Noiseless simulation only; no hardware run (transpiled circuit sizes are reported in 7b); scaling was studied only up to n = 14 with 2-3 seeds.
 * Synthetic data; weights, the 0.5 km/min speed and the overlap model (w_O = 0.3, 15 km) are assumptions we chose. Model C's overlap term is our own modelling extension.
 * One depot, interchangeable teams, no routing/capacity/time dynamics; this is decision support, not an epidemiological or outbreak-prevention model.
 * X-mixer QAOA wastes most samples on infeasible or poor states. XY fixes feasibility but its Dicke start (amplitude loading, ~1000 CX) dominates circuit size; a dedicated linear-depth Dicke circuit would be needed at scale.

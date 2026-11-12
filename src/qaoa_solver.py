@@ -57,6 +57,7 @@ class QaoaConfig:
     rhobeg: float = 0.3              # COBYLA initial trust-region step
     tolerance: float = 1e-4          # COBYLA final tolerance
     init: str = "interp"             # "interp", "ramp" or "random"
+    start: str = "dicke"             # XY mixer start state: "dicke" (default) or shallow "basis"
 
     def __post_init__(self) -> None:
         if self.depth < 1:
@@ -137,7 +138,7 @@ def energy_from_counts(counts: Dict[str, int], energy_table: np.ndarray) -> floa
 def _optimise_stage(ising: Ising, energy_table: np.ndarray, num_teams: int, backend: AerSimulator,
                     config: QaoaConfig, depth: int, x0: np.ndarray):
     """Transpile once, then run COBYLA at one depth. Returns (x, history, nfev, compiled, ansatz, t_transpile, t_opt)."""
-    ansatz = build_qaoa_circuit(ising, num_teams, depth, config.mixer)
+    ansatz = build_qaoa_circuit(ising, num_teams, depth, config.mixer, config.start)
     t0 = time.perf_counter()
     compiled = transpile(with_measurements(ansatz), backend, optimization_level=1,
                          seed_transpiler=config.seed)

@@ -223,7 +223,8 @@ def _ring_pairs(n: int) -> Tuple[list, list]:
     return even, odd
 
 
-def build_qaoa_circuit(ising: Ising, num_teams: int, depth: int, mixer: str = "x") -> QuantumCircuit:
+def build_qaoa_circuit(ising: Ising, num_teams: int, depth: int, mixer: str = "x",
+                       start: str = "dicke") -> QuantumCircuit:
     """Parameterised QAOA ansatz (no measurement), parameters gamma[0..p-1], beta[0..p-1].
 
     Layer l:  cost  U_C(gamma_l) = exp(-i gamma_l H_C/scale)  via RZ / RZZ gates
@@ -234,6 +235,8 @@ def build_qaoa_circuit(ising: Ising, num_teams: int, depth: int, mixer: str = "x
         raise ValueError("depth p must be >= 1")
     if mixer not in MIXERS:
         raise ValueError(f"mixer must be one of {MIXERS}")
+    if start not in ("dicke", "basis"):
+        raise ValueError("start must be 'dicke' or 'basis'")
     n = ising.n
     scale = cost_scale(ising)
     gamma = ParameterVector("gamma", depth)
@@ -242,6 +245,9 @@ def build_qaoa_circuit(ising: Ising, num_teams: int, depth: int, mixer: str = "x
 
     if mixer == "x":
         qc.h(range(n))                                          # |+>^n
+    elif start == "basis":
+        for i in range(num_teams):                              # one feasible basis state |1..10..0>
+            qc.x(i)                                             # (shallow; XY mixer keeps weight K)
     else:
         qc.append(StatePreparation(dicke_amplitudes(n, num_teams)), range(n))  # Dicke state
     qc.barrier()
