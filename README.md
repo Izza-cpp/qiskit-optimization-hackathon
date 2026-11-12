@@ -114,7 +114,7 @@ Other studies: shots 128–8192 (`summary_shots.csv`), penalty 0.25–4 × λ* (
 | 12 | 4 | 495 | 0.0285 | 0.0020 | 14.1× | 8246 |
 | 14 | 4 | 1001 | 0.0056 | 0.0010 | 5.6× | 32830 |
 
-Enrichment over random sampling persists up to n = 14 on average, but the circuit depth (generic Dicke state) explodes (n=14: ~33k layers, ~400 s per run on 1 CPU) and the n = 14 result is noisy: one of two seeds (P=0.0005) was below random sampling (0.0010). Only 2-3 seeds per size, so this is indicative only.
+Enrichment over random sampling persists up to n = 14 on average, but the circuit depth (generic Dicke state) explodes (n=14: ~33k layers, ~400 s per run on 1 CPU) and the n = 14 result is noisy: one of two seeds (P=0.clear0005) was below random sampling (0.0010). Only 2-3 seeds per size, so this is indicative only.
 
 **Robustness of the model-C optimum (E10a; 3000 data perturbations per level, `e10_robustness.csv`).**
 

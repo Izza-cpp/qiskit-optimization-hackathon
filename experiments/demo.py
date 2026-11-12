@@ -1,3 +1,5 @@
+import sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 """Short live demo for the video (about 30-40 s): exact answers, then one XY-QAOA run on model C.
 
 Run from the repository root:   python experiments/demo.py
@@ -50,3 +52,4 @@ for sel, count in sorted(tally.items(), key=lambda kv: -kv[1])[:5]:
 
 print("\n[3] Honest summary: QAOA is enriched over random sampling, but it does NOT beat")
 print("    exact enumeration or simple classical heuristics at this size.")
+
