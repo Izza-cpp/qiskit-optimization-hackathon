@@ -1,0 +1,4 @@
+model,weights_patients,weights_outbreak,weights_travel,weights_overlap,optimal_selection,candidates_evaluated,optimal_F,second_best_F,gap_to_second,ties,patients_covered,outbreak_risk_sum,total_travel_min,overlap_sum
+A,0.5,0.0,0.2,0.0,L1 L3 L7,120,0.884848484848485,0.8651515151515151,0.01969696969696988,False,290.0,205.0,130.0,0.0
+B,0.5,0.3,0.2,0.0,L1 L3 L5,120,1.615151515151515,1.5907575757575754,0.024393939393939634,False,260.0,250.0,95.0,0.6914060859635389
+C,0.5,0.3,0.2,0.3,L1 L3 L9,120,1.5206825349021087,1.5115151515151513,0.00916738338695744,False,255.0,255.0,100.0,0.23358346951822262

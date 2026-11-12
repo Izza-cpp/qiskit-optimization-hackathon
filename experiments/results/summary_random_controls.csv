@@ -1,0 +1,3 @@
+method,feasibility_rate_mean,feasibility_rate_std,feasibility_rate_min,feasibility_rate_max,optimal_probability_mean,optimal_probability_std,optimal_probability_min,optimal_probability_max,optimality_gap_range_mean,optimality_gap_range_std,optimality_gap_range_min,optimality_gap_range_max,runs,runs_without_feasible,runs_found_exact_optimum
+random_feasible,1.0,0.0,1.0,1.0,0.008203125,0.0017947980145950808,0.00537109375,0.0107421875,0.0,0.0,0.0,0.0,10,0,10
+random_uniform,0.11865234375,0.006546935338905847,0.11181640625,0.13037109375,0.001025390625,0.0005845795897157542,0.0,0.001953125,0.0018527617506953764,0.005858947093838445,0.0,0.018527617506953763,10,0,9

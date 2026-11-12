@@ -1,9 +1,11 @@
-qiskit
-qiskit-aer
-numpy
-scipy
-pandas
-matplotlib
+# Core (tested with Qiskit 2.6.2 / Aer 0.18.2 on Python 3.13; your Python 3.12 + the same Qiskit/Aer pins are expected to work)
+qiskit>=2.6,<3
+qiskit-aer>=0.18,<0.19
+numpy>=2.0
+scipy>=1.13
+pandas>=2.2
+matplotlib>=3.8
+# Tests and notebook
+pytest>=8
 jupyter
-ipykernel
-pytest
+nbformat

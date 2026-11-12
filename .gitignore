@@ -28,3 +28,6 @@ Thumbs.db
 # Build files
 build/
 dist/
+old_results_backup/
+
+old_results_backup/

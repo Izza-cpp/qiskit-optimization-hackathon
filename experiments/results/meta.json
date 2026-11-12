@@ -1,0 +1,78 @@
+{
+  "quick": false,
+  "config": {
+    "depth_max": 5,
+    "depth_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "shots_list": [
+      128,
+      512,
+      2048,
+      8192
+    ],
+    "shots_depth": 3,
+    "shots_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "pen_mults": [
+      0.25,
+      0.5,
+      0.8,
+      1.0,
+      1.25,
+      2.0,
+      4.0
+    ],
+    "pen_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "pen_depth": 3,
+    "cmp_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "cmp_depth": 4,
+    "base_shots": 2048
+  },
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "qiskit": "2.6.2",
+  "qiskit_aer": "0.18.2",
+  "numpy": "2.5.4",
+  "scipy": "1.17.1",
+  "pandas": "3.1.1",
+  "matplotlib": "3.11.2",
+  "weights_models_A_B": {
+    "patients": 0.5,
+    "outbreak": 0.3,
+    "travel": 0.2
+  },
+  "overlap_weight_model_C": 0.3,
+  "optimizer": "scipy COBYLA, INTERP warm starts",
+  "backend": "qiskit_aer.AerSimulator(method='statevector')",
+  "num_qaoa_chains": 110,
+  "num_result_rows": 190,
+  "runtime_note": "runtime_total_s = transpile + optimisation loop + final sampling (+ shallower INTERP stages); excludes exact-statevector diagnostics. Measured with workers running in parallel.",
+  "wall_clock_seconds": 641.1
+}
